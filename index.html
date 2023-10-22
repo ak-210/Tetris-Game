@@ -8,11 +8,29 @@
         Tetris
     </title>
     <link rel='stylesheet' href='styles.css'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
-    <canvas id="tetris-board" width="200" height="400"></canvas>
-    <div id="score">Score = 0</div>
-    <button id="pause">Pause</button>
+    <div id="container">
+        <div class="aside">
+            <p>SCORE</p>
+            <div id="score">0</div>
+        </div>
+        <div id="main">
+            <canvas id="tetris-board" width="250" height="500"></canvas> <!-- 10 by 20 canvas -->
+            <button id="pause">Play</button>
+            <button id="restart">Restart</button>
+        </div>
+        <div class="aside">
+            <div id="control">
+                <i class="bi bi-arrow-up-circle"></i> <span>Rotate Block</span>
+                <i class="bi bi-arrow-down-circle"></i> <span>Move Down</span>
+                <i class="bi bi-arrow-left-circle"></i> <span>Move Left</span>
+                <i class="bi bi-arrow-right-circle"></i> <span>Move Right</span>
+                <span>SPACE</span> <span>Pause/Play</span>
+            </div>
+        </div>
+    </div>
 
     <script src="tetrominoes.js"></script>
     <script src='script.js'></script>

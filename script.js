@@ -5,11 +5,12 @@ const scoreEle = document.getElementById('score')
 
 const ROW = 20
 const COL = COLUMN = 10;
-const sq = 20 // Size of square
+const sq = 25 // Size of square
 
 const vacant = 'white' // color of an empty square
 
 let score = 0
+let interval = 1000
 
 // Drawing a Square
 function drawSquare(x, y, color) {
@@ -22,10 +23,12 @@ function drawSquare(x, y, color) {
 
 // Creating a board
 let board = []
-for (var i=0 ;i<ROW;++i){
-    board[i] = []
-    for ( var j=0 ;j <COL;++j ){
-        board[i][j] = vacant
+function clearBoard(){
+    for (var i=0 ;i<ROW;++i){
+        board[i] = []
+        for ( var j=0 ;j <COL;++j ){
+            board[i][j] = vacant
+        }
     }
 }
 
@@ -37,7 +40,7 @@ function drawBoard(){
         }
     }
 }
-
+clearBoard()
 drawBoard()
 
 // Pieces and their color
@@ -89,12 +92,11 @@ Piece.prototype.draw = function() {
     this.fill(this.color)
 }
 
-p.draw()
+// p.draw()
 
 // Undraw previous piece
 Piece.prototype.unDraw = function() {
     this.fill(vacant)
-
 }
 
 // Functions for Controlling the piece
@@ -138,7 +140,7 @@ Piece.prototype.rotate = function() {
 
 // Moving the piece down
 Piece.prototype.moveDown = function(){
-    if(!this.collision(0,1,this.activeTetromino)){
+    if(!this.collision(0, 1, this.activeTetromino)){
         this.unDraw()
         this.y++
         this.draw()
@@ -158,7 +160,9 @@ Piece.prototype.lock = function(){
             }
             // pieces to lock on top = game over
             if(this.y + r < 0){
-                alert("Game Over");
+                alert(`Game Over\n Score:${score}`);
+                clearBoard()
+                drawBoard()
                 // stop request animation frame
                 gameOver = true;
                 break;
@@ -188,11 +192,13 @@ Piece.prototype.lock = function(){
             }
             // increment the score
             score += 10;
+
+            if (score <450) interval = 1100 - 100*(Math.floor(score/50)+1)
         }
     }
     // update the board and score
     drawBoard();
-    scoreEle.innerHTML = `Score = ${score}`
+    scoreEle.innerHTML = `${score}`
 }
 
 // Pause the game
@@ -236,28 +242,28 @@ Piece.prototype.collision = function(x, y, piece) {
 document.addEventListener('keydown', control)
 
 function control(event) {
-    if(event.keyCode == 39){
-        p.moveLeft();
-        dropStart = Date.now();
-    }else if(event.keyCode == 38){
-        p.rotate();
-        dropStart = Date.now();
-    }else if(event.keyCode == 37){
-        p.moveRight();
-        dropStart = Date.now();
-    }else if(event.keyCode == 40){
-        p.moveDown();
-    }else if(event.keyCode == 32){
-        pause();
+    if (!gameOver){
+        if(event.keyCode == 39){
+            p.moveLeft();
+            dropStart = Date.now();
+        }else if(event.keyCode == 38){
+            p.rotate();
+            dropStart = Date.now();
+        }else if(event.keyCode == 37){
+            p.moveRight();
+            dropStart = Date.now();
+        }else if(event.keyCode == 40){
+            p.moveDown();
+        }
     }
 }
 
 let dropStart = Date.now()
-let gameOver = false
+let gameOver = true
 
 function drop() {
     let now = Date.now()
-    if (now-dropStart > 1000){
+    if (now-dropStart > interval){
         p.moveDown()
         dropStart = Date.now()
     }
@@ -266,9 +272,22 @@ function drop() {
     }
 }
 
-drop()
+// Function to Start and Pause the game
+const playBtn = document.getElementById('pause')
 
-document.getElementById('pause').onclick = pause
+// Change the state on button click
+playBtn.onclick = () => {
+    pause();
+    if (gameOver) playBtn.innerText = 'Play'
+    else playBtn.innerText = 'Pause'
+}
 
-
+// Restarting the game
+document.getElementById('restart').onclick = () => {
+    pause()
+    gameOver = true
+    clearBoard()
+    drawBoard()
+    p = randomPiece()
+}
 
